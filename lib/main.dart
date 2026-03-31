@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
-  runApp(const MainApp());
-}
+import 'app/app.dart';
+import 'app/app_module.dart';
+import 'core/di/injection_container.dart';
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
-    );
-  }
+  // Inicializa o Hive para armazenamento local
+  await Hive.initFlutter();
+
+  // Configura injeção de dependências
+  await setupInjection();
+
+  runApp(
+    ModularApp(
+      module: AppModule(),
+      child: const AppWidget(),
+    ),
+  );
 }

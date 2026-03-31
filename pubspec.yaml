@@ -1,5 +1,5 @@
 name: reconstruction_leaf_damage
-description: "A new Flutter project."
+description: "LeafScope - Aplicativo para quantificação de dano foliar via Convex Hull"
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -10,10 +10,44 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Estado
+  flutter_bloc: ^8.1.6
+  bloc: ^8.1.4
+
+  # Navegação
+  flutter_modular: ^6.3.4
+
+  # Processamento de imagem (Dart puro, sem bindings nativos)
+  image: ^4.2.0
+
+  # Câmera e galeria
+  image_picker: ^1.1.2
+
+  # Armazenamento local
+  hive_flutter: ^1.1.0
+  hive: ^2.2.3
+
+  # Utilitários
+  equatable: ^2.0.5
+  get_it: ^7.7.0
+  dartz: ^0.10.1
+
+  # UUID para geração de IDs
+  uuid: ^4.5.1
+
+  # Diretório temporário para salvar imagens processadas
+  path_provider: ^2.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  bloc_test: ^9.1.7
+  mocktail: ^1.0.4
+  build_runner: ^2.4.13
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/test_images/
