@@ -17,8 +17,8 @@ dependencies:
   # Navegação
   flutter_modular: ^6.3.4
 
-  # Processamento de imagem (Dart puro, sem bindings nativos)
-  image: ^4.2.0
+  # Processamento de imagem — OpenCV4 via FFI
+  opencv_dart: ^1.4.5
 
   # Câmera e galeria
   image_picker: ^1.1.2

@@ -268,7 +268,8 @@ class _DamageIndicatorCard extends StatelessWidget {
 }
 
 // ──────────────────────────────────────────────────────
-// Linha com as 3 imagens: original, segmentada, reconstruída
+// Visualização das 3 imagens empilhadas em largura cheia
+// (mesmo tamanho da imagem da calibração de escala)
 // ──────────────────────────────────────────────────────
 class _ImageComparisonRow extends StatelessWidget {
   final LeafAnalysisModel result;
@@ -300,16 +301,12 @@ class _ImageComparisonRow extends StatelessWidget {
                 _LegendDot(color: const Color(0xFF008000), label: 'Contorno Hull'),
               ],
             ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(child: _ImageTile(label: 'Original', bytes: result.originalBytes)),
-                const SizedBox(width: 8),
-                Expanded(child: _ImageTile(label: 'Segmentada', bytes: result.segmentedBytes)),
-                const SizedBox(width: 8),
-                Expanded(child: _ImageTile(label: 'Reconstruída', bytes: result.reconstructedBytes)),
-              ],
-            ),
+            const SizedBox(height: 12),
+            _ImageTile(label: 'Original', bytes: result.originalBytes),
+            const SizedBox(height: 16),
+            _ImageTile(label: 'Segmentada', bytes: result.segmentedBytes),
+            const SizedBox(height: 16),
+            _ImageTile(label: 'Reconstruída', bytes: result.reconstructedBytes),
           ],
         ),
       ),
@@ -347,29 +344,38 @@ class _ImageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: Image.memory(
-              bytes,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stack) => Container(
-                color: Colors.grey[200],
-                child: const Icon(Icons.broken_image, color: Colors.grey),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final displayWidth = constraints.maxWidth;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
               ),
             ),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 11, color: Colors.grey),
-          textAlign: TextAlign.center,
-        ),
-      ],
+            const SizedBox(height: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.memory(
+                bytes,
+                width: displayWidth,
+                fit: BoxFit.fitWidth,
+                errorBuilder: (context, error, stack) => Container(
+                  width: displayWidth,
+                  height: displayWidth * 0.75,
+                  color: Colors.grey[200],
+                  child: const Icon(Icons.broken_image, color: Colors.grey),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
