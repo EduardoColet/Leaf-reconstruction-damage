@@ -76,26 +76,6 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: OutlinedButton.icon(
-                  onPressed: () => Modular.to.pushNamed('/history'),
-                  icon: const Icon(Icons.history),
-                  label: const Text(
-                    'Histórico',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.grey,
-                    side: const BorderSide(color: Colors.grey),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

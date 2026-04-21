@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 import '../controller/analysis_bloc.dart';
 import '../../../core/di/injection_container.dart';
@@ -17,10 +18,12 @@ class AnalysisPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt<AnalysisBloc>()
-        ..add(AnalyzeImageEvent(
-          imageBytes: args.imageBytes,
-          imagePath: args.imagePath,
-        )),
+        ..add(
+          AnalyzeImageEvent(
+            imageBytes: args.imageBytes,
+            imagePath: args.imagePath,
+          ),
+        ),
       child: const _AnalysisView(),
     );
   }
@@ -37,6 +40,10 @@ class _AnalysisView extends StatelessWidget {
         backgroundColor: const Color(0xFF4CAF50),
         foregroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Modular.to.pushNamed('/'),
+        ),
       ),
       body: BlocBuilder<AnalysisBloc, AnalysisState>(
         builder: (context, state) {
