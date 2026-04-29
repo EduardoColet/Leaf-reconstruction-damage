@@ -42,7 +42,7 @@ class _AnalysisView extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Modular.to.pushNamed('/'),
+          onPressed: () => Modular.to.pop(),
         ),
       ),
       body: BlocBuilder<AnalysisBloc, AnalysisState>(

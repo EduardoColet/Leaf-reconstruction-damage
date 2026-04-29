@@ -38,6 +38,10 @@ dependencies:
   # Diretório temporário para salvar imagens processadas
   path_provider: ^2.1.2
 
+  # Geração e compartilhamento de PDF
+  pdf: ^3.11.1
+  printing: ^5.13.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

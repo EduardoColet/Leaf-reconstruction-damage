@@ -80,6 +80,7 @@ _PipelineResult _runOpenCvPipeline(Uint8List imageBytes) {
   cv.Mat? resized;
   cv.Mat? hsv;
   cv.Mat? mask;
+  cv.Mat? maskBrown;
   cv.Mat? closed;
   cv.Mat? cleaned;
   cv.Mat? kernelClose;
@@ -105,17 +106,33 @@ _PipelineResult _runOpenCvPipeline(Uint8List imageBytes) {
 
     hsv = cv.cvtColor(resized, cv.COLOR_BGR2HSV);
 
+    // ── Segmentação em duas faixas de cor ──────────────────────
+    // Faixa 1: verdes (principal)
     mask = cv.inRangebyScalar(
       hsv,
-      cv.Scalar(30, 40, 40),
-      cv.Scalar(90, 255, 255),
+      cv.Scalar(25, 30, 30),
+      cv.Scalar(95, 255, 255),
     );
 
-    // Kernel pequeno (3x3) para CLOSE: consolida pixels da folha sem
-    // preencher buracos médios — buracos com diâmetro >= 4px sobrevivem e
-    // serão detectados pela passagem CCOMP de findContours mais adiante.
-    kernelClose = cv.getStructuringElement(cv.MORPH_RECT, (3, 3));
-    kernelOpen = cv.getStructuringElement(cv.MORPH_RECT, (3, 3));
+    // Faixa 2: tons amarronzados / amarelados da folha que caem
+    // fora do range verde (H 10–25). Saturação e brilho mínimos
+    // altos para não capturar fundos bege/tecido (S>=60, V>=60).
+    maskBrown = cv.inRangebyScalar(
+      hsv,
+      cv.Scalar(10, 60, 60),
+      cv.Scalar(25, 255, 255),
+    );
+
+    // Une as duas faixas
+    final combined = cv.bitwiseOR(mask, maskBrown);
+    mask.dispose();
+    mask = combined;
+
+    // Kernel 5x5 para CLOSE: consolida melhor a folha, preenche
+    // micro-falhas entre as duas faixas de cor. Buracos com
+    // diâmetro >= 6px sobrevivem e serão detectados via CCOMP.
+    kernelClose = cv.getStructuringElement(cv.MORPH_ELLIPSE, (5, 5));
+    kernelOpen = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3));
     closed = cv.morphologyEx(mask, cv.MORPH_CLOSE, kernelClose);
     cleaned = cv.morphologyEx(closed, cv.MORPH_OPEN, kernelOpen);
 
@@ -148,10 +165,7 @@ _PipelineResult _runOpenCvPipeline(Uint8List imageBytes) {
 
       final leafContour = externalContours[leafIdx];
 
-      // Constrói uma máscara binária só com a folha (maior componente)
-      // para que countNonZero conte exclusivamente os pixels visíveis dela.
-      // Isso desconta naturalmente os buracos internos — algo que
-      // cv.contourArea(leafContour) NÃO faz, pois só vê o polígono externo.
+      // Constrói máscara binária restrita à folha (maior componente)
       final leafMask = cv.Mat.zeros(cleaned.rows, cleaned.cols, cv.MatType.CV_8UC1);
       try {
         final leafAsVecVecForMask = cv.VecVecPoint.fromVecPoint(leafContour);
@@ -161,17 +175,13 @@ _PipelineResult _runOpenCvPipeline(Uint8List imageBytes) {
             leafAsVecVecForMask,
             0,
             cv.Scalar.all(255),
-            thickness: -1, // preenchido
+            thickness: -1,
           );
         } finally {
           leafAsVecVecForMask.dispose();
         }
-        // Interseção com a máscara morfologicamente limpa: assim os buracos
-        // detectados (pretos em `cleaned`) ficam pretos também aqui.
         final intersected = cv.bitwiseAND(leafMask, cleaned);
         try {
-          // Substitui `cleaned` por essa máscara restrita à folha selecionada,
-          // descartando ruídos de outras regiões verdes da imagem.
           cleaned.dispose();
           cleaned = intersected.clone();
         } finally {
@@ -196,9 +206,7 @@ _PipelineResult _runOpenCvPipeline(Uint8List imageBytes) {
         throw const _PipelineException('Area do Convex Hull invalida');
       }
 
-      // Detecta buracos internos via hierarquia CCOMP (parent != -1) e
-      // soma sua área. Os contornos são reaproveitados logo abaixo para
-      // desenhá-los preenchidos na imagem reconstruída.
+      // Detecta buracos internos via hierarquia CCOMP (parent != -1)
       double holeArea = 0;
       segmentedMat = cv.bitwiseAND(resized, resized, mask: cleaned);
       reconstructedMat = resized.clone();
@@ -214,8 +222,6 @@ _PipelineResult _runOpenCvPipeline(Uint8List imageBytes) {
 
           holeArea += cv.contourArea(c);
 
-          // Desenha cada buraco preenchido em laranja sobre a reconstruída
-          // (thickness = -1 → fill). Use uma VecVecPoint temporária.
           final holeAsVecVec = cv.VecVecPoint.fromVecPoint(c);
           try {
             cv.drawContours(
@@ -234,7 +240,7 @@ _PipelineResult _runOpenCvPipeline(Uint8List imageBytes) {
         ccompHierarchy.dispose();
       }
 
-      // Contorno verde da folha real (por cima dos buracos preenchidos)
+      // Contorno verde da folha real
       final leafAsVecVec = cv.VecVecPoint.fromVecPoint(leafContour);
       try {
         cv.drawContours(
@@ -248,7 +254,7 @@ _PipelineResult _runOpenCvPipeline(Uint8List imageBytes) {
         leafAsVecVec.dispose();
       }
 
-      // Polígono vermelho do Convex Hull por cima de tudo
+      // Polígono vermelho do Convex Hull
       final hullAsVecVec = cv.VecVecPoint.fromVecPoint(hullPoints);
       try {
         cv.polylines(
@@ -284,6 +290,7 @@ _PipelineResult _runOpenCvPipeline(Uint8List imageBytes) {
     resized?.dispose();
     hsv?.dispose();
     mask?.dispose();
+    maskBrown?.dispose();
     closed?.dispose();
     cleaned?.dispose();
     kernelClose?.dispose();

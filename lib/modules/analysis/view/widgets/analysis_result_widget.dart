@@ -6,6 +6,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../core/models/leaf_analysis_model.dart';
 import '../../../../core/utils/image_utils.dart';
+import '../../../../core/utils/pdf_export.dart';
 
 class AnalysisResultWidget extends StatefulWidget {
   final LeafAnalysisModel result;
@@ -163,6 +164,22 @@ class _AnalysisResultWidgetState extends State<AnalysisResultWidget> {
           const SizedBox(height: 24),
 
           // ── Botões de ação ─────────────────────────
+          ElevatedButton.icon(
+            onPressed: () => exportAnalysisPdf(
+              widget.result,
+              pxPerCm: _pxPerCm,
+            ),
+            icon: const Icon(Icons.picture_as_pdf),
+            label: const Text('Exportar PDF'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1565C0),
+              foregroundColor: Colors.white,
+              minimumSize: const Size.fromHeight(52),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+          ),
+          const SizedBox(height: 12),
           ElevatedButton.icon(
             onPressed: () => Modular.to.navigate('/'),
             icon: const Icon(Icons.home),
@@ -625,17 +642,6 @@ class _MetricsCard extends StatelessWidget {
               iconColor: Colors.red,
               label: 'Área danificada total',
               value: formatArea(result.damagedArea),
-            ),
-            const Divider(height: 16),
-            _MetricRow(
-              icon: Icons.access_time,
-              iconColor: Colors.grey,
-              label: 'Analisado em',
-              value: '${result.analyzedAt.day.toString().padLeft(2, '0')}/'
-                  '${result.analyzedAt.month.toString().padLeft(2, '0')}/'
-                  '${result.analyzedAt.year}  '
-                  '${result.analyzedAt.hour.toString().padLeft(2, '0')}:'
-                  '${result.analyzedAt.minute.toString().padLeft(2, '0')}',
             ),
           ],
         ),
