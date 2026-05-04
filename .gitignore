@@ -47,3 +47,6 @@ app.*.map.json
 # Claude Code
 .claude/
 CLAUDE.md
+
+# Arquivos do documento/artigo local
+Aplicativo_multiplataforma_para_medir_dano_foliar_usando_técnicas_de_processamento_de_imagens/
