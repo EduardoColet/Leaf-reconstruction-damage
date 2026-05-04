@@ -4,14 +4,11 @@ import 'package:flutter_modular/flutter_modular.dart';
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
-  // ⚠️ Substitua pelos valores reais antes da entrega.
   static const String _developerName = 'Eduardo Colet';
-  static const String _developerEmail = 'eduardocolet5@gmail.com';
-  static const String _developerLinkedin = 'https://www.linkedin.com/in/seu-usuario/';
-  static const String _developerGithub = 'https://github.com/EduardoColet';
-
+  static const String _developerEmail =
+      'eduardocolet5@gmail.com ou 195296@upf.br';
   static const String _advisorName = 'Prof. Rafael Rieder';
-  static const String _advisorEmail = 'orientador@upf.br';
+  static const String _advisorEmail = 'rieder@upf.br';
 
   static const String _institution =
       'Universidade de Passo Fundo (UPF) — Curso de Ciência da Computação';
@@ -40,13 +37,13 @@ class AboutPage extends StatelessWidget {
             icon: Icons.description_outlined,
             title: 'Sobre o aplicativo',
             child: Text(
-              'O LeafScope é um aplicativo multiplataforma para medir e quantificar '
-              'automaticamente o dano foliar em plantas, utilizando técnicas '
-              'clássicas de processamento de imagens executadas localmente no '
-              'dispositivo. O cálculo combina segmentação no espaço HSV, operações '
-              'morfológicas e reconstrução geométrica via Convex Hull, '
-              'contemplando danos de borda e buracos internos.',
-              style: TextStyle(fontSize: 14, height: 1.5),
+              'O LeafScope ajuda agricultores, técnicos e pesquisadores a medir '
+              'rapidamente o quanto uma folha foi danificada — seja por insetos, '
+              'doenças ou outros fatores. Basta tirar uma foto da folha e o '
+              'aplicativo calcula automaticamente o percentual de área afetada, '
+              'sem precisar de internet ou qualquer equipamento especial. '
+              'Tudo é feito direto no seu celular.',
+              style: TextStyle(fontSize: 14, height: 1.6),
             ),
           ),
           const SizedBox(height: 16),
@@ -65,16 +62,6 @@ class AboutPage extends StatelessWidget {
                   icon: Icons.email_outlined,
                   label: 'E-mail',
                   value: _developerEmail,
-                ),
-                _InfoRow(
-                  icon: Icons.code,
-                  label: 'GitHub',
-                  value: _developerGithub,
-                ),
-                _InfoRow(
-                  icon: Icons.work_outline,
-                  label: 'LinkedIn',
-                  value: _developerLinkedin,
                 ),
               ],
             ),
@@ -108,10 +95,7 @@ class AboutPage extends StatelessWidget {
           _SectionCard(
             icon: Icons.info_outline,
             title: 'Versão',
-            child: Text(
-              _appVersion,
-              style: const TextStyle(fontSize: 14),
-            ),
+            child: Text(_appVersion, style: const TextStyle(fontSize: 14)),
           ),
           const SizedBox(height: 32),
           Text(
@@ -140,11 +124,7 @@ class _AppHeader extends StatelessWidget {
             color: const Color(0xFFE8F5E9),
             borderRadius: BorderRadius.circular(24),
           ),
-          child: const Icon(
-            Icons.eco,
-            size: 56,
-            color: Color(0xFF4CAF50),
-          ),
+          child: const Icon(Icons.eco, size: 56, color: Color(0xFF4CAF50)),
         ),
         const SizedBox(height: 12),
         const Text(
@@ -243,10 +223,7 @@ class _InfoRow extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                SelectableText(
-                  value,
-                  style: const TextStyle(fontSize: 13),
-                ),
+                SelectableText(value, style: const TextStyle(fontSize: 13)),
               ],
             ),
           ),
